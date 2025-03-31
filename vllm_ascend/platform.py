@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING, Optional, Tuple
 import torch
 import torch_npu  # noqa: F401
 import vllm.envs as envs
-from vllm.config import CompilationLevel, VllmConfig
+from vllm.config import CompilationLevel, VllmConfig, ModelConfig
 from vllm.logger import init_logger
 from vllm.platforms import Platform, PlatformEnum
 
@@ -89,7 +89,13 @@ class NPUPlatform(Platform):
     @classmethod
     def check_and_update_config(cls, vllm_config: VllmConfig) -> None:
         compilation_config = vllm_config.compilation_config
-        if compilation_config and compilation_config.level != CompilationLevel.NO_COMPILATION:
+        if compilation_config and compilation_config.level == CompilationLevel.PIECEWISE:
+            logger.warning(
+                "Compilation level %s is supported on NPU now, But use_inductor is no support",
+                compilation_config.level)
+            compilation_config.use_inductor = False
+            compilation_config.splitting_ops = ["vllm.unified_ascend_attention_with_output"]
+        elif compilation_config and compilation_config.level != CompilationLevel.NO_COMPILATION:
             logger.warning(
                 "Compilation level %s is not supported on NPU now, forcing compilation level to NO_COMPILATION",
                 compilation_config.level)
@@ -139,4 +145,8 @@ class NPUPlatform(Platform):
 
     @classmethod
     def is_pin_memory_available(cls):
+        return True
+
+    @classmethod
+    def supports_v1(cls, model_config: ModelConfig) -> bool:
         return True
