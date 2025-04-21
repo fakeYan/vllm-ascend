@@ -13,7 +13,6 @@ from vllm.config import (CompilationConfig, CompilationLevel, VllmConfig,
                          set_current_vllm_config)
 from vllm.utils import direct_register_custom_op
 
-
 global_counter = 0
 
 # create a library to hold the custom op

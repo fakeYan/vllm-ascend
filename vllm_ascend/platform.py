@@ -22,10 +22,11 @@ from typing import TYPE_CHECKING, Optional, Tuple
 import torch
 import torch_npu  # noqa: F401
 import vllm.envs as envs
+from torch_npu.op_plugin.atb._atb_ops import _register_atb_extensions
 from vllm.logger import logger
 from vllm.platforms import Platform, PlatformEnum
+
 from vllm_ascend.ops import register_dummy_fusion_op
-from torch_npu.op_plugin.atb._atb_ops import _register_atb_extensions
 
 CUSTOM_OP_ENABLED = False
 try:
